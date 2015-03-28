@@ -6,12 +6,19 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script>
 
+
+// View for each one Person
 $(document).ready(function(){
     $(".list-header").live('click', function(event) {
-		$(event.target).siblings('.details').slideToggle('fast');
+		var element = $(this);
+		var element2 = $(event.target).siblings('.details').slideDown('fast');
+		$("body").append(element,element2);
+		$("li").hide();
+		$(".button").show();
     });
 });
 
+// View for all Persons
 function customersController($scope,$http) {
     $http.get("data.json").success(function(data) {
 		$scope.names = data;
@@ -26,12 +33,15 @@ function customersController($scope,$http) {
 <div ng-app="" ng-controller="customersController"> 
 
 <ul>
+<div class= "button">
+<input type="button" onClick="history.go(0)" value="Previous Page">
+</div>
   <li ng-repeat="x in names">
     <span class = "list-header">{{ x.Name }}</span>
-	<div class = "details">
-		{{ x.Email }}</br>
-		{{ x.Title }}
-		</div>
+		<div class = "details">
+			{{ x.Title }}</br>
+			{{ x.Email }}
+			</div>
   </li>
 </ul>
 </div>
