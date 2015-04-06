@@ -1,0 +1,94 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<script type="text/template" id="person-template">
+		<span class="list-header"><%= Name %></span>
+		<div class="details">
+			Τίτλος πτυχιακής: <%= Title %><br/>
+			Email: <a href="mailto:<%= Email %>"><%= Email %></a></br>
+		</div>
+	</script>
+	
+<script id="personTemplate0" type="text/template">
+	<strong><%= Name %></strong> <%= Email %> <%= Title %> <%= Text %>
+</script>
+
+<script src="data.json"></script>
+<script src="underscore.js"></script>
+<script src="jquery.js"></script>
+<script src="backbone.js"></script>
+
+<script>
+
+<!-- Model start here -->
+// Person Model
+var Person = Backbone.Model.extend({
+	defaults: {
+		Name: 'undefined',
+		Email: 'undefined',
+		Title: 'undefined',
+		Text: 'undefined'
+	}
+});
+
+// A List of People
+var PeopleCollection = Backbone.Collection.extend({
+	model: Person
+});
+<!-- Model end here -->
+
+<!-- View start here -->
+// The View for a Person
+var PersonView = Backbone.View.extend({
+	tagName: 'li',
+	
+	events: {
+		'click .list-header': 'showDetails'
+	},
+	
+	showDetails: function(e) {
+		$(e.target).siblings('.details').slideToggle('fast');
+	},
+
+	template: _.template($('#person-template').html()),
+	
+	render: function() {
+		this.$el.html( this.template(this.model) );
+		return this;
+	}
+});
+
+// View for all people
+var PeopleView = Backbone.View.extend({
+	//tagName: 'ul',
+	
+	render: function() {
+		//console.log('Testing console1');
+		_.each(this.collection, function(person) {
+			this.renderPerson(person);
+		}, this);
+	},
+	
+	renderPerson: function(person) {
+		//console.log('Testing console2');
+		var newperson = new PersonView({
+			model: person
+		});
+		$(document.body).append(newperson.render().el);
+	}
+});
+<!-- View end here -->
+
+
+var peopleView = new PeopleView({ collection: data });
+peopleView.render();
+//console.log(peopleView);
+//$(document.body).append(peopleView.render().el);
+
+</script>
+</body>
+</html>
