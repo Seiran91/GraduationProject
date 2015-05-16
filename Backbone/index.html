@@ -95,7 +95,6 @@ var PeopleView = Backbone.View.extend({
 	},
 	
 	renderPerson: function(personview) {
-	console.log("im in render 2");
 	var person = new PersonView({model: personview});
 		$("ul").append(person.el);
 	}
@@ -103,15 +102,10 @@ var PeopleView = Backbone.View.extend({
 <!-- View end here -->
 $(document).ready(function(){
 
-var persons = new PeopleCollection(data);
-peopleView = new PeopleView({collection: data})
-
-//display(data);
+	var persons = new PeopleCollection(data);
+	peopleView = new PeopleView({collection: data})
 
 });
-function display(collection){
-	console.log(JSON.stringify(collection));
-}
 
 </script>
 </body>
