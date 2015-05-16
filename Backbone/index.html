@@ -2,36 +2,36 @@
 <head>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="style.css">
+	<script src="data.json"></script>
+	<script src="underscore.js"></script>
+	<script src="jquery.js"></script>
+	<script src="backbone.js"></script>
+	<script src="json.js"></script>
 </head>
+
 <body>
 
 <script type="text/template" id="person-template">
+<div class="returnButton">
+<button>Previous List</button>
+</div>
 		<span class="list-header"><%= Name %></span>
 		<div class="details">
 			Τίτλος πτυχιακής: <%= Title %><br/>
 			Email: <a href="mailto:<%= Email %>"><%= Email %></a></br>
 		</div>
 	</script>
-	
-<script id="personTemplate0" type="text/template">
-	<strong><%= Name %></strong> <%= Email %> <%= Title %> <%= Text %>
-</script>
-
-<script src="data.json"></script>
-<script src="underscore.js"></script>
-<script src="jquery.js"></script>
-<script src="backbone.js"></script>
-
+	<ul></ul>
 <script>
 
 <!-- Model start here -->
 // Person Model
 var Person = Backbone.Model.extend({
 	defaults: {
-		Name: 'undefined',
-		Email: 'undefined',
-		Title: 'undefined',
-		Text: 'undefined'
+		Name: 'unknown',
+		Email: 'unknown',
+		Title: 'unknown',
+		Text: 'unknown'
 	}
 });
 
@@ -42,16 +42,32 @@ var PeopleCollection = Backbone.Collection.extend({
 <!-- Model end here -->
 
 <!-- View start here -->
-// The View for a Person
+// The View for each Person
 var PersonView = Backbone.View.extend({
-	tagName: 'li',
+	tagName:"li",
+	className:"invisible",
 	
-	events: {
-		'click .list-header': 'showDetails'
+	initialize: function(){
+	this.render();
 	},
 	
-	showDetails: function(e) {
-		$(e.target).siblings('.details').slideToggle('fast');
+	events: {
+		"click .list-header": "showDetails",
+		"click .returnButton": "showList"
+	},
+	
+	showDetails: function(event) {
+		$(event.target).siblings('.details').slideDown('fast');
+		$(this.el).removeClass( "invisible" ).addClass( "visible" );
+		$(".invisible").hide();
+		$(".returnButton").show();
+	},
+	
+	showList: function(){
+		$(".details").hide();
+		$("ul").find(".visible").removeClass("visible").addClass("invisible");
+		$(".invisible").show();
+		$(".returnButton").hide();
 	},
 
 	template: _.template($('#person-template').html()),
@@ -62,32 +78,41 @@ var PersonView = Backbone.View.extend({
 	}
 });
 
-// View for all people
+// View for all Persons
 var PeopleView = Backbone.View.extend({
-	//tagName: 'ul',
+	tagName: 'li',
+	
+	initialize: function(){
+	this.render();
+	},
+	
+	template: _.template($('#person-template').html()),
+	
 	
 	render: function() {
-		//console.log('Testing console1');
 		_.each(this.collection, function(person) {
 			this.renderPerson(person);
 		}, this);
 	},
 	
-	renderPerson: function(person) {
-		//console.log('Testing console2');
-		var newperson = new PersonView({
-			model: person
-		});
-		$(document.body).append(newperson.render().el);
+	renderPerson: function(personview) {
+	console.log("im in render 2");
+	var person = new PersonView({model: personview});
+		$("ul").append(person.el);
 	}
 });
 <!-- View end here -->
+$(document).ready(function(){
 
+var persons = new PeopleCollection(data);
+peopleView = new PeopleView({collection: data})
 
-var peopleView = new PeopleView({ collection: data });
-peopleView.render();
-//console.log(peopleView);
-//$(document.body).append(peopleView.render().el);
+//display(data);
+
+});
+function display(collection){
+	console.log(JSON.stringify(collection));
+}
 
 </script>
 </body>

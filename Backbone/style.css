@@ -5,10 +5,14 @@
 }
 
 .details {
-	display:none;
+	display: none;
 	padding:20px;
 }
 
 li {
 	list-style:none;
 	}
+	
+.returnButton{
+	display:none;
+}
