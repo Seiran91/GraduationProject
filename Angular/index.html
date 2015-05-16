@@ -9,12 +9,11 @@
 
 // View for each one Person
 $(document).ready(function(){
-    $(".list-header").live('click', function(event) {
-		var element = $(this);
-		var element2 = $(event.target).siblings('.details').slideDown('fast');
-		$("body").append(element,element2);
-		$("li").hide();
-		$(".button").show();
+    $("li").live('click', function(event) {
+		//console.log(event.target.parentElement.className);
+		$(event.target).siblings('.details').slideDown('fast');
+		$(this).siblings().hide();
+		$(".returnButton").show();
     });
 });
 
@@ -25,17 +24,24 @@ function customersController($scope,$http) {
 		});
 }
 
+function showList($scope){
+	$("li").show();
+	$(".details").hide();
+	$(".returnButton").hide();
+	
+}
 </script>
 </head>
 
 <body>
 
-<div ng-app="" ng-controller="customersController"> 
+<div ng-app="" ng-controller="customersController">
+
+<div class= "returnButton">
+<input type="button" onClick="showList()" value="Previous Page">
+</div>
 
 <ul>
-<div class= "button">
-<input type="button" onClick="history.go(0)" value="Previous Page">
-</div>
   <li ng-repeat="x in names">
     <span class = "list-header">{{ x.Name }}</span>
 		<div class = "details">
