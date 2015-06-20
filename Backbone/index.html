@@ -1,24 +1,72 @@
 <html>
 <head>
-	<meta charset="utf-8">
+	<meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<script src="data.json"></script>
 	<script src="underscore.js"></script>
 	<script src="jquery.js"></script>
 	<script src="backbone.js"></script>
-	<script src="json.js"></script>
 </head>
 
 <body>
 
-<script type="text/template" id="person-template">
-<div class="returnButton">
-<button>Previous List</button>
+<div class="invisible">
+	<button class="show-form">Εισαγωγή φοιτητή &#8597;</button></br></br>
+
+	<div class="add-form" style="display: none;">
+		<h5>*Υποχρεωτικά πεδία</h5>
+		<table>
+			<tr>
+			<td>*Name: </td>
+			<td><input class="model-Name" value=""></td>
+			</tr>
+			<tr>
+			<td>*Title: </td>
+			<td><input class="model-Title" value=""></td>
+			</tr>
+			<tr>
+			<td>Email: </td>
+			<td><input class="model-Email" value=""></td>
+			</tr>
+			<tr>
+			<td colspan="2" style="text-align:center"><button class="add-person">Εισαγωγή</button></td>
+			</tr>
+		</table>
+	</div>
 </div>
-		<span class="list-header"><%= Name %></span>
+
+<script type="text/template" id="person-template">
+
+<div class="returnButton">
+	<button>Προηγούμενο</button>
+	</br></br>
+</div>
+
+	<span class="list-header"><%= Name %></span>
 		<div class="details">
 			Τίτλος πτυχιακής: <%= Title %><br/>
-			Email: <a href="mailto:<%= Email %>"><%= Email %></a></br>
+			Email: <%= Email %></br></br>
+			<button class="edit">Επεξεργασία</button>
+			<button class="delete">Διαγραφή</button>
+			<div class = "edit-details" style="display: none">
+				<table>
+				<tr>
+					<td>Name: </td>
+					<td><input class="update-Name" value="<%= Name %>"></td>
+				</tr>
+				<tr>
+					<td>Title: </td>
+					<td><input class="update-Title" value="<%= Title %>"></td>
+				</tr>
+				<tr>
+					<td>Email: </td>
+					<td><input class="update-Email" value="<%= Email %>"></td>
+				</tr>
+				<tr>
+				<td colspan="2" style="text-align:center"><button class="update">Ενημέρωση</button></td>
+				</tr>
+				</table>
+			</div>
 		</div>
 	</script>
 	<ul></ul>
@@ -28,84 +76,169 @@
 // Person Model
 var Person = Backbone.Model.extend({
 	defaults: {
-		Name: 'unknown',
-		Email: 'unknown',
-		Title: 'unknown',
-		Text: 'unknown'
+		Name: 'Δεν καταχωρήθηκε',
+		Title: 'Δεν καταχωρήθηκε',
+		Email: 'Δεν καταχωρήθηκε',
+		Text: 'Δεν καταχωρήθηκε'
 	}
 });
-
-// A List of People
-var PeopleCollection = Backbone.Collection.extend({
-	model: Person
-});
 <!-- Model end here -->
+
+<!-- Collection start here -->
+// A Collection of People
+var PeopleCollection = Backbone.Collection.extend({
+	model: Person,
+	
+	comparator: function(item) { // Ταξινομεί το collection
+      return item.get('Name').toLowerCase();
+    }
+});
+
+<!-- Collection end here -->
 
 <!-- View start here -->
 // The View for each Person
 var PersonView = Backbone.View.extend({
-	tagName:"li",
+
+	model: new Person(),
+	tagName: "li",
 	className:"invisible",
 	
 	initialize: function(){
-	this.render();
+		this.render();
+		this.model.on('change', this.Message, this);
+	},
+	
+	template: _.template($('#person-template').html()),
+	
+	render: function() {
+		this.$el.html( this.template(this.model.toJSON()) );
+		return this;
 	},
 	
 	events: {
 		"click .list-header": "showDetails",
-		"click .returnButton": "showList"
+		"click .returnButton": "showList",
+		"click .edit": "Edit",
+		"click .update": "Update",
+		"click .delete": "Remove"
+		
 	},
-	
+
 	showDetails: function(event) {
 		$(event.target).siblings('.details').slideDown('fast');
 		$(this.el).removeClass( "invisible" ).addClass( "visible" );
 		$(".invisible").hide();
+		$(".add-form").hide();
 		$(".returnButton").show();
 	},
 	
 	showList: function(){
 		$(".details").hide();
-		$("ul").find(".visible").removeClass("visible").addClass("invisible");
+		$(this.el).removeClass("visible").addClass("invisible");
 		$(".invisible").show();
 		$(".returnButton").hide();
+		$('.edit-details').slideUp();
 	},
-
-	template: _.template($('#person-template').html()),
 	
-	render: function() {
-		this.$el.html( this.template(this.model) );
-		return this;
+	Edit: function(event){
+		$('.edit-details').slideDown('fast');
+	},
+	
+	Update: function(){
+		this.model.set( "Name", this.$('.update-Name').val() );
+		this.model.set( "Title", this.$('.update-Title').val() );
+		this.model.set( "Email", this.$('.update-Email').val() );
+		$(this.el).removeClass( "visible" ).addClass( "invisible" );
+		$(".details").hide();
+		$('.edit-details').slideUp();
+		$(".returnButton").hide();
+		$(".invisible").show();
+	},
+	
+	Remove: function(){
+		console.log("The student '"+ this.model.get("Name") + "' has deleted from your system!");
+		this.model.destroy();
+		$(".invisible").show();
+		$('.add-form').hide();
+	},
+	
+	Message: function(){
+		console.log("\nThe student with name '"+ this.model.previous("Name") +"' has updated from:\n",
+			"\n Name:  ", this.model.previous("Name"),
+			"\n Title: ", this.model.previous("Title"),
+			"\n Email: ", this.model.previous("Email"),
+			"\n\nto \n",
+			"\n Name:  ",this.model.get("Name"),
+			"\n Title: ",this.model.get("Title"),
+			"\n Email: ",this.model.get("Email")
+		);
 	}
 });
 
-// View for all Persons
+// The View for all Persons
 var PeopleView = Backbone.View.extend({
+
+	el: 'ul',
+	collection: new PeopleCollection(),
 	
 	initialize: function(){
-	this.render();
+		this.render();
+		this.collection.on('add', this.render, this);
+		this.collection.on('remove', this.render, this);
+		this.collection.on('change', this.render, this);
 	},
-	
-	template: _.template($('#person-template').html()),
-	
 	
 	render: function() {
-		_.each(this.collection, function(person) {
-			this.renderPerson(person);
+		this.collection.sort(); // Ταξινομεί τη συλλογή (καλεί το comparator του collection)
+		this.$el.empty();	// 'Αδειάζει' το ul tag
+		_.each(this.collection.models, function(person) {
+			var personview = new PersonView({model: person});
+			this.$el.append(personview.$el);
 		}, this);
-	},
-	
-	renderPerson: function(personview) {
-	var person = new PersonView({model: personview});
-		$("ul").append(person.el);
 	}
 });
 <!-- View end here -->
+
 $(document).ready(function(){
 
 	var persons = new PeopleCollection(data);
-	peopleView = new PeopleView({collection: data})
+	var peopleView = new PeopleView({collection: persons});
+
+	// Add Student event
+	$('.add-person').on('click', function(){
+		if(($('.model-Name').val() != '')&& ($('.model-Title').val() != '')){
+			var personAdd = new Person({
+				Name: $('.model-Name').val(),
+				Title: $('.model-Title').val(),
+				Email: checkEmail($('.model-Email').val())
+			});
+			$('.model-Name').val('');
+			$('.model-Title').val('');
+			$('.model-Email').val('');
+			
+			persons.add(personAdd);
+			console.log("The student '"+personAdd.get("Name")+"' has been added into your system!");
+			alert("Η εισαγωγή ολοκληρώθηκε με επιτυχία!");
+		} else {
+			alert(" Αποτυχία εισαγωγής φοιτητή,\n παρακαλώ συμπληρώστε τα υποχρεωτικά πεδία!");
+			}
+		});
+		
+	// Show form for Add Person event
+	$('.show-form').on('click', function(event){
+		$(event.target).siblings('.add-form').slideToggle('fast');
+	});
 
 });
+function checkEmail(email){
+	if(email != ''){
+		return email;
+	}
+	else{
+		return "Δεν καταχωρήθηκε";
+	}
+}
 
 </script>
 </body>
