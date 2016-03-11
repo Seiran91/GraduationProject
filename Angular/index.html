@@ -1,56 +1,138 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="style.css">
-<script src= "http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-<script>
-
-
-// View for each Person
-$(document).ready(function(){
-    $("li").live('click', function(event) {
-		//console.log(event.target.parentElement.className);
-		$(event.target).siblings('.details').slideDown('fast');
-		$(this).siblings().hide();
-		$(".returnButton").show();
-    });
-});
-
-// View for all Persons
-function customersController($scope,$http) {
-    $http.get("data.json").success(function(data) {
-		$scope.names = data;
-		});
-}
-
-function showList($scope){
-	$("li").show();
-	$(".details").hide();
-	$(".returnButton").hide();
-	
-}
-</script>
+<script src= "data.json"></script>
+<script src= "//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
 </head>
 
 <body>
+<h3>Angular Web App</h3>
+<div ng-app="studentsApp" ng-controller="studentsController">
 
-<div ng-app="" ng-controller="customersController">
+	<div class="invisible">
+	
+		<button class="form-button" ng-click="showForm()" ng-show="shSpan"> Εισαγωγή φοιτητή &#8597; </button>
+		<button class="form-button" ng-click="showList()" ng-hide="shSpan"> Πίσω </button></br>
 
-<div class= "returnButton">
-<input type="button" onClick="showList()" value="Previous Page">
-</div>
+		<div ng-show="shForm">
+			<form name="registration" ng-submit="register(addstudent)">
+			<h5>*Υποχρεωτικά πεδία</h5>
+			<table>
+				<tr>
+				<td>*Name: </td>
+				<td><input type="text"  name="name" ng-model="addstudent.Name" required></td>
+				</tr>
+				<tr>
+				<td>*Title: </td>
+				<td><input type="text" name="title" ng-model="addstudent.Title" required></td>
+				</tr>
+				<tr>
+				<td>Email: </td>
+				<td><input type="email" name="email" ng-model="addstudent.Email"></td>
+				</tr>
+				<tr>
+				<td colspan="2" style="text-align:center"><button type="submit">Εισαγωγή</button></td>
+				</tr>
+			</table>
+			<form>
+		</div>
+	</div>
 
-<ul>
-  <li ng-repeat="x in names">
-    <span class = "list-header">{{ x.Name }}</span>
-		<div class = "details">
-			{{ x.Title }}</br>
-			{{ x.Email }}
+	<ul ng-hide="shForm">
+		<li ng-repeat="(index, x) in names | orderBy:'Name' | filter: filters">
+			<span class = "list-header" ng-click="showDetails(x)" ng-show="shSpan" >{{ x.Name }}</span>
+			<div ng-show="details"></br>
+				<h1>{{ x.Name }}</h1>
+				<h4>Τίτλος πτυχιακής: {{ x.Title }}</br>
+					Email: {{ x.Email }}</h4>
+				<button class="edit-button"  ng-click="edit = !edit">Επεξεργασία</button>
+				<button class="delete-button" ng-hide="edit" ng-click="removeStudent(x)">Διαγραφή</button>
+				<div class = "edit-details" ng-show="edit" ng-init="edit = false">
+						<table></br>
+							<tr>
+								<td>Name: </td>
+								<td><input type="text" ng-change="update(x.Name)" ng-model="x.Name" ng-model-options="{ updateOn: 'blur' }" ></td>
+							</tr>
+							<tr>
+								<td>Title: </td>
+								<td><input type="text" ng-model="x.Title" ng-model-options="{ updateOn: 'blur' }" required></td>
+							</tr>
+							<tr>
+								<td>Email: </td>
+								<td><input type="email" ng-model="x.Email" ng-model-options="{ updateOn: 'blur' }"></td>
+							</tr>
+							<tr>
+							<td colspan="2" style="text-align:center"></br><button type="submit" ng-click="edit=!edit">Αποθήκευση</button></td>
+							</tr>
+						</table>
+				</div>
 			</div>
-  </li>
-</ul>
+		</li>
+	</ul>
+	
 </div>
+
+<script>
+
+
+var myApp = angular.module('studentsApp',[]);
+
+// Controller
+myApp.controller('studentsController', function($scope) {
+
+	$scope.names = studentsNames;
+	
+	// Some boolean variables for show or hide content 
+	$scope.filters = '';
+	$scope.details = false;
+	$scope.bool = false;
+	$scope.shSpan = true;
+	$scope.shForm = false;
+	
+	// On click show only the clicked person and hide the others
+	$scope.showDetails = function(x){
+		$scope.filters = x.Name;
+		$scope.details = true;
+		$scope.shSpan = false;
+		$scope.edit = false;
+	}
+	// Show/Hide registration form
+	$scope.showForm = function(){
+		$scope.shForm = !$scope.shForm;
+	}
+	
+	$scope.showList = function(){
+		$scope.filters = '';
+		$scope.details = false;
+		$scope.shSpan = true;
+		$scope.edit = false;
+	}
+	// Registration(Push form inputs to the array with the names)
+	$scope.register = function(student){
+		if(!student.Email){
+			student.Email = "Δεν καταχωρήθηκε";
+		}
+		$scope.names.push(student);
+		console.log(student.Name + " added in System");
+		$scope.showForm();
+		$scope.addstudent = null;
+	}
+	// Change the filter when we make changes on the Name field
+	$scope.update = function(name){
+		$scope.filters = name;
+	}
+	//Remove student from the array
+	$scope.removeStudent = function(student){
+	  var index = $scope.names.indexOf(student) //Find the cell number of this item
+      $scope.names.splice(index,1); // Remove from the cell "index" 1 item
+	  console.log(student.Name+" is removed from your System");
+	  $scope.showList();
+    }
+	
+});
+</script>
 
 </body>
 </html>
