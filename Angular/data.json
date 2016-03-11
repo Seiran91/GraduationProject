@@ -1,4 +1,4 @@
-[
+var studentsNames = [
 	{
 		"Name": "Hayes Douglas",
 		"Email": "odio.semper.cursus@orciquis.edu",
@@ -599,4 +599,4 @@
 		"Title": "justo. Proin non massa non",
 		"Text": "sed pede. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Proin vel arcu eu odio tristique pharetra. Quisque ac libero nec ligula consectetuer rhoncus. Nullam velit dui, semper et, lacinia vitae, sodales at, velit."
 	}
-]
+];

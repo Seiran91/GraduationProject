@@ -1,23 +1,15 @@
 .list-header{
 	padding:10px;
 	cursor:pointer;
-	display:block;
+	display:inline;
 }
 
-.list-header:hover {
-	background:#7893AB;
+.list-header:hover{
+	background:red;
 	color:#fff;
-}
-
-.details {
-	display:none;
-	padding:20px;
 }
 
 li {
 	list-style:none;
+	padding: 10px
 	}
-
-.returnButton{
-	display:none;
-}
