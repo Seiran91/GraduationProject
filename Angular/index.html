@@ -36,7 +36,7 @@
 				<td colspan="2" style="text-align:center"><button type="submit">Εισαγωγή</button></td>
 				</tr>
 			</table>
-			<form>
+			</form>
 		</div>
 	</div>
 
@@ -50,6 +50,7 @@
 				<button class="edit-button"  ng-click="edit = !edit">Επεξεργασία</button>
 				<button class="delete-button" ng-hide="edit" ng-click="removeStudent(x)">Διαγραφή</button>
 				<div class = "edit-details" ng-show="edit" ng-init="edit = false">
+					<form ng-submit="edit=!edit">
 						<table></br>
 							<tr>
 								<td>Name: </td>
@@ -64,9 +65,10 @@
 								<td><input type="email" ng-model="x.Email" ng-model-options="{ updateOn: 'blur' }"></td>
 							</tr>
 							<tr>
-							<td colspan="2" style="text-align:center"></br><button type="submit" ng-click="edit=!edit">Αποθήκευση</button></td>
+							<td colspan="2" style="text-align:center"></br><button type="submit">Αποθήκευση</button></td>
 							</tr>
 						</table>
+					</form>
 				</div>
 			</div>
 		</li>
