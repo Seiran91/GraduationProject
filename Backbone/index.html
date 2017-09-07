@@ -6,6 +6,7 @@
 	<script src="underscore.js"></script>
 	<script src="jquery.js"></script>
 	<script src="backbone.js"></script>
+	
 </head>
 
 <body>
@@ -71,16 +72,23 @@
 		</div>
 	</script>
 	<ul></ul>
+	
 <script>
-
 <!-- Model start here -->
 // Person Model
 var Person = Backbone.Model.extend({
+	urlRoot: 'connection.php/',
+	
+	validate: function(attrs, options){
+		if((attrs.Name == '') || (attrs.Title == '')){
+			return "The fields 'Name' and 'Title' cannot be empty!";
+		}
+	},
+
 	defaults: {
 		Name: 'Δεν καταχωρήθηκε',
 		Title: 'Δεν καταχωρήθηκε',
-		Email: 'Δεν καταχωρήθηκε',
-		Text: 'Δεν καταχωρήθηκε'
+		Email: 'Δεν καταχωρήθηκε'
 	}
 });
 <!-- Model end here -->
@@ -89,9 +97,10 @@ var Person = Backbone.Model.extend({
 // A Collection of People
 var PeopleCollection = Backbone.Collection.extend({
 	model: Person,
+	url: 'connection.php',
 	
-	comparator: function(item) { // Ταξινομεί το collection
-      return item.get('Name').toLowerCase();
+	comparator: function(student) { // Ταξινομεί το collection
+      return student.get('Name').toLowerCase();
     }
 });
 
@@ -108,6 +117,9 @@ var PersonView = Backbone.View.extend({
 	initialize: function(){
 		this.render();
 		this.model.on('change', this.Message, this);
+		this.model.on('invalid', function(error){
+			alert(error.validationError);
+			});
 	},
 	
 	template: _.template($('#person-template').html()),
@@ -132,6 +144,7 @@ var PersonView = Backbone.View.extend({
 		$(".invisible").hide();
 		$(".add-form").hide();
 		$(".returnButton").show();
+		app.navigate("students/"+this.model.id);
 	},
 	
 	showList: function(){
@@ -140,6 +153,7 @@ var PersonView = Backbone.View.extend({
 		$(".invisible").show();
 		$(".returnButton").hide();
 		$('.edit-details').slideUp();
+		app.navigate("students");
 	},
 	
 	Edit: function(event){
@@ -147,21 +161,30 @@ var PersonView = Backbone.View.extend({
 	},
 	
 	Update: function(){
-		this.model.set( "Name", this.$('.update-Name').val() );
-		this.model.set( "Title", this.$('.update-Title').val() );
-		this.model.set( "Email", this.$('.update-Email').val() );
-		$(this.el).removeClass( "visible" ).addClass( "invisible" );
-		$(".details").hide();
-		$('.edit-details').slideUp();
-		$(".returnButton").hide();
-		$(".invisible").show();
-	},
-	
-	Remove: function(){
-		console.log("The student '"+ this.model.get("Name") + "' has deleted from your system!");
-		this.model.destroy();
-		$(".invisible").show();
-		$('.add-form').hide();
+		
+		this.model.set({
+			Name: this.$('.update-Name').val(),
+			Title: this.$('.update-Title').val(),
+			Email: this.$('.update-Email').val()
+			}),
+			
+			this.model.save({},{
+					success: function () {
+						alert("Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+					},
+					error: function (xhr) {
+						console.log("Something went wrong while updating the model");
+						console.log(xhr.responseText);
+						alert(" Αποτυχία ενημέρωσης φοιτητή, παρουσιάστηκε κάποιο σφάλμα κατα την ενημέρωση!");
+					}
+				});
+			$(this.el).removeClass( "visible" ).addClass( "invisible" );
+			$(".details").hide();
+			$('.edit-details').slideUp();
+			$(".returnButton").hide();
+			$(".invisible").show();
+			app.navigate("students");
+		
 	},
 	
 	Message: function(){
@@ -174,57 +197,150 @@ var PersonView = Backbone.View.extend({
 			"\n Title: ",this.model.get("Title"),
 			"\n Email: ",this.model.get("Email")
 		);
+	},
+	
+	Remove: function(){
+		//console.log("The student '"+ this.model.get("Name") + "' has deleted from your system!");
+		
+		this.model.destroy({
+			success: function(model, xhr){
+				console.log("The model is deleted!");
+				//console.log(xhr.responseText);
+			},
+			error: function(model, xhr){
+				//console.log(model.url);
+				console.log("Failed to delete model: " + JSON.stringify(model));
+				console.log(xhr.responseText);
+			}
+		});
+		$(".invisible").show();
+		$('.add-form').hide();
 	}
 });
 
-// The View for all Persons
+// The View for all Persons 
 var PeopleView = Backbone.View.extend({
 
 	el: 'ul',
-	collection: new PeopleCollection(),
 	
 	initialize: function(){
 		this.render();
-		this.collection.on('add', this.render, this);
+		this.collection.on('add', this.render, this)
 		this.collection.on('remove', this.render, this);
-		this.collection.on('change', this.render, this);
+		this.collection.on('change', this.render, this)
 	},
 	
 	render: function() {
-		this.collection.sort(); // Ταξινομεί τη συλλογή (καλεί το comparator του collection)
+		//this.collection.sort(); // Ταξινομεί τη συλλογή (καλεί το comparator του collection)
 		this.$el.empty();	// 'Αδειάζει' το ul tag
+
+		//console.log(this.collection);
 		_.each(this.collection.models, function(person) {
 			var personview = new PersonView({model: person});
 			this.$el.append(personview.$el);
 		}, this);
 	}
 });
+
 <!-- View end here -->
 
-$(document).ready(function(){
-
-	var persons = new PeopleCollection(data);
-	var peopleView = new PeopleView({collection: persons});
-
-	// Add Student event
-	$('.add-person').on('click', function(){
-		if(($('.model-Name').val() != '')&& ($('.model-Title').val() != '')){
-			var personAdd = new Person({
-				Name: $('.model-Name').val(),
-				Title: $('.model-Title').val(),
-				Email: checkEmail($('.model-Email').val())
-			});
-			$('.model-Name').val('');
-			$('.model-Title').val('');
-			$('.model-Email').val('');
-			
-			persons.add(personAdd);
-			console.log("The student '"+personAdd.get("Name")+"' has been added into your system!");
-			alert("Η εισαγωγή ολοκληρώθηκε με επιτυχία!");
-		} else {
-			alert(" Αποτυχία εισαγωγής φοιτητή,\n παρακαλώ συμπληρώστε τα υποχρεωτικά πεδία!");
+<!-- Routers start here -->
+var StartRouter = Backbone.Router.extend({
+	routes:{
+		"": "redirect",
+		"students/": "redirect",
+		"students": "startApp",
+		"students/(:any)": "singleContent",
+		"*other": "pageError"
+	},
+	
+	pageError: function(other){
+		$('ul').empty();
+		$('ul').append("<h1>Searched content doesn't exist!!!</h1>");
+	},
+	
+	redirect: function(){
+		this.navigate("/students");
+		this.startApp();
+	},
+	
+	singleContent: function(any){
+		$('ul').empty();
+		searchedPerson = new Person();
+		searchedPerson.set({id: any});
+		searchedPerson.fetch({
+			success: function(){
+				searchedPerson.on('sync', function(){
+					singleView = new PersonView({model: searchedPerson});
+					$('ul').append(singleView.$el);
+					$('.details').show();
+					$(".show-form").hide();
+					$('.edit').hide();
+					$('.delete').hide();
+					$('.update').hide();
+				});
+			},
+			error: function(){
+				$('ul').append("<h1>Searched content doesn't exist!!!</h1>");
 			}
 		});
+	},
+	
+	startApp: function(){
+		$(".show-form").show();
+		persons = new PeopleCollection();
+		persons.fetch(); //This send GET request to the server
+		persons.on('sync', function () {
+			peopleView = new PeopleView({collection: persons});
+		//console.log(persons); 
+		});
+	}
+});
+<!-- Routers end  here -->
+
+
+$(document).ready(function(){
+	app = new StartRouter();
+	Backbone.history.start();
+	//Start the rendering of the collection
+	
+	
+	// Add Student to the collection
+	$('.add-person').on('click', function(){
+		if(($('.model-Name').val() != '')&& ($('.model-Title').val() != '')){
+			var personAdd = new Person();
+			personAdd.set('Name', $('.model-Name').val());
+			personAdd.set('Title', $('.model-Title').val());
+			personAdd.set('Email', checkEmail($('.model-Email').val()));
+			console.log(personAdd.attributes);
+			
+			personAdd.save({}, {
+				success: function () {
+					alert("Η εισαγωγή ολοκληρώθηκε με επιτυχία!");
+					persons.add(personAdd);
+					console.log("The student '"+personAdd.get("Name")+"' has been added into your system!");
+					
+					//Make the form empty
+					$('.model-Name').val('');
+					$('.model-Title').val('');
+					$('.model-Email').val('');
+				},
+				error: function (model, xhr, err) {
+					if(xhr.status == 200){
+						alert("This Student's Name or Title exist already");
+						console.log(xhr.responseText);
+					} 
+					else {
+						console.log("Something went wrong while saving the model "+ xhr.status);
+						alert(" Αποτυχία εισαγωγής φοιτητή, παρουσιάστηκε κάποιο σφάλμα κατα την εισαγωγή!");
+					}
+				}
+			});
+		} 
+		else {
+			alert(" Αποτυχία εισαγωγής φοιτητή,\n παρακαλώ συμπληρώστε τα υποχρεωτικά πεδία!");
+		}
+	});
 		
 	// Show form for Add Person event
 	$('.show-form').on('click', function(event){
@@ -240,7 +356,6 @@ function checkEmail(email){
 		return "Δεν καταχωρήθηκε";
 	}
 }
-
 </script>
 </body>
 </html>
