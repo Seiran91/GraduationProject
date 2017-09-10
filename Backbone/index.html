@@ -5,8 +5,10 @@
 	<script src="data.json"></script>
 	<script src="underscore.js"></script>
 	<script src="jquery.js"></script>
-	<script src="backbone.js"></script>
-	
+	<script src="backbone.js"></script>	
+	<!-- <script src="scripts/collection.js"></script>
+	<script src="scripts/views.js"></script>
+	<script src="scripts/router.js"></script> -->
 </head>
 
 <body>
@@ -81,13 +83,13 @@ var Person = Backbone.Model.extend({
 	
 	validate: function(attrs, options){
 		if((attrs.Name == '') || (attrs.Title == '')){
-			return "The fields 'Name' and 'Title' cannot be empty!";
+			return "The fields 'Name' and 'Title' can't be empty!";
 		}
 	},
-
+	
 	defaults: {
-		Name: 'Δεν καταχωρήθηκε',
-		Title: 'Δεν καταχωρήθηκε',
+		Name: '',
+		Title: '',
 		Email: 'Δεν καταχωρήθηκε'
 	}
 });
@@ -103,10 +105,9 @@ var PeopleCollection = Backbone.Collection.extend({
       return student.get('Name').toLowerCase();
     }
 });
-
 <!-- Collection end here -->
 
-<!-- View start here -->
+<!-- Views start here -->
 // The View for each Person
 var PersonView = Backbone.View.extend({
 
@@ -117,9 +118,6 @@ var PersonView = Backbone.View.extend({
 	initialize: function(){
 		this.render();
 		this.model.on('change', this.Message, this);
-		this.model.on('invalid', function(error){
-			alert(error.validationError);
-			});
 	},
 	
 	template: _.template($('#person-template').html()),
@@ -161,16 +159,25 @@ var PersonView = Backbone.View.extend({
 	},
 	
 	Update: function(){
-		
-		this.model.set({
+		var validationModel = new Person();
+		validationModel.set({
 			Name: this.$('.update-Name').val(),
 			Title: this.$('.update-Title').val(),
-			Email: this.$('.update-Email').val()
-			}),
-			
-			this.model.save({},{
+			Email: this.$('.update-Email').val(),
+			validate: true
+			});
+		//console.log(this.model.attributes);
+		if(validationModel.isValid()){
+			this.model.save({
+				Name: this.$('.update-Name').val(),
+				Title: this.$('.update-Title').val(),
+				Email: this.$('.update-Email').val()
+				},
+				
+				{	
 					success: function () {
 						alert("Η ενημέρωση ολοκληρώθηκε με επιτυχία!");
+						validationModel.destroy();
 					},
 					error: function (xhr) {
 						console.log("Something went wrong while updating the model");
@@ -184,7 +191,9 @@ var PersonView = Backbone.View.extend({
 			$(".returnButton").hide();
 			$(".invisible").show();
 			app.navigate("students");
-		
+		} else {
+			alert(validationModel.validationError);
+		}
 	},
 	
 	Message: function(){
@@ -205,6 +214,7 @@ var PersonView = Backbone.View.extend({
 		this.model.destroy({
 			success: function(model, xhr){
 				console.log("The model is deleted!");
+				app.navigate("students");
 				//console.log(xhr.responseText);
 			},
 			error: function(model, xhr){
@@ -225,24 +235,21 @@ var PeopleView = Backbone.View.extend({
 	
 	initialize: function(){
 		this.render();
-		this.collection.on('add', this.render, this)
+		this.collection.on('add', this.render, this);
 		this.collection.on('remove', this.render, this);
-		this.collection.on('change', this.render, this)
+		this.collection.on('change', this.render, this);
 	},
 	
 	render: function() {
-		//this.collection.sort(); // Ταξινομεί τη συλλογή (καλεί το comparator του collection)
 		this.$el.empty();	// 'Αδειάζει' το ul tag
-
-		//console.log(this.collection);
+		
 		_.each(this.collection.models, function(person) {
 			var personview = new PersonView({model: person});
 			this.$el.append(personview.$el);
 		}, this);
 	}
 });
-
-<!-- View end here -->
+<!-- Views end here -->
 
 <!-- Routers start here -->
 var StartRouter = Backbone.Router.extend({
@@ -289,10 +296,9 @@ var StartRouter = Backbone.Router.extend({
 	startApp: function(){
 		$(".show-form").show();
 		persons = new PeopleCollection();
-		persons.fetch(); //This send GET request to the server
+		persons.fetch(); //This send GET request to the server 'connection.php'
 		persons.on('sync', function () {
 			peopleView = new PeopleView({collection: persons});
-		//console.log(persons); 
 		});
 	}
 });
@@ -302,22 +308,21 @@ var StartRouter = Backbone.Router.extend({
 $(document).ready(function(){
 	app = new StartRouter();
 	Backbone.history.start();
-	//Start the rendering of the collection
 	
 	
-	// Add Student to the collection
+	// Add Student to DataBase
 	$('.add-person').on('click', function(){
 		if(($('.model-Name').val() != '')&& ($('.model-Title').val() != '')){
 			var personAdd = new Person();
-			personAdd.set('Name', $('.model-Name').val());
-			personAdd.set('Title', $('.model-Title').val());
-			personAdd.set('Email', checkEmail($('.model-Email').val()));
-			console.log(personAdd.attributes);
 			
-			personAdd.save({}, {
-				success: function () {
+			personAdd.save({
+				Name: $('.model-Name').val(),
+				Title: $('.model-Title').val(),
+				Email: checkEmail($('.model-Email').val())
+			}, {
+				success: function (response) {
 					alert("Η εισαγωγή ολοκληρώθηκε με επιτυχία!");
-					persons.add(personAdd);
+					persons.fetch(); // After save send GET request to the server to get updated list!
 					console.log("The student '"+personAdd.get("Name")+"' has been added into your system!");
 					
 					//Make the form empty
