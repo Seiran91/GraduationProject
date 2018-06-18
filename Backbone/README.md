@@ -1,1 +1,1 @@
-This is a simple Backbone example where i am including data from json file and display them in HTML using Backbone framework with jQuery and Underscore.
+This is a simple Backbone example where i am get data from the server and display them in HTML using Backbone framework.
