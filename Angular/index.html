@@ -3,138 +3,109 @@
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="style.css">
-<script src= "data.json"></script>
-<script src= "//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-route.js"></script>
+
 </head>
 
 <body>
 <h3>Angular Web App</h3>
 <div ng-app="studentsApp" ng-controller="studentsController">
-
-	<div class="invisible">
+	<div ng-view>
 	
-		<button class="form-button" ng-click="showForm()" ng-show="shSpan"> Εισαγωγή φοιτητή &#8597; </button>
-		<button class="form-button" ng-click="showList()" ng-hide="shSpan"> Πίσω </button></br>
-
-		<div ng-show="shForm">
-			<form name="registration" ng-submit="register(addstudent)">
-			<h5>*Υποχρεωτικά πεδία</h5>
-			<table>
-				<tr>
-				<td>*Name: </td>
-				<td><input type="text"  name="name" ng-model="addstudent.Name" required></td>
-				</tr>
-				<tr>
-				<td>*Title: </td>
-				<td><input type="text" name="title" ng-model="addstudent.Title" required></td>
-				</tr>
-				<tr>
-				<td>Email: </td>
-				<td><input type="email" name="email" ng-model="addstudent.Email"></td>
-				</tr>
-				<tr>
-				<td colspan="2" style="text-align:center"><button type="submit">Εισαγωγή</button></td>
-				</tr>
-			</table>
-			</form>
-		</div>
 	</div>
-
-	<ul ng-hide="shForm">
-		<li ng-repeat="(index, x) in names | orderBy:'Name' | filter: filters">
-			<span class = "list-header" ng-click="showDetails(x)" ng-show="shSpan" >{{ x.Name }}</span>
-			<div ng-show="details"></br>
-				<h1>{{ x.Name }}</h1>
-				<h4>Τίτλος πτυχιακής: {{ x.Title }}</br>
-					Email: {{ x.Email }}</h4>
-				<button class="edit-button"  ng-click="edit = !edit">Επεξεργασία</button>
-				<button class="delete-button" ng-hide="edit" ng-click="removeStudent(x)">Διαγραφή</button>
-				<div class = "edit-details" ng-show="edit" ng-init="edit = false">
-					<form ng-submit="edit=!edit">
-						<table></br>
-							<tr>
-								<td>Name: </td>
-								<td><input type="text" ng-change="update(x.Name)" ng-model="x.Name" ng-model-options="{ updateOn: 'blur' }" ></td>
-							</tr>
-							<tr>
-								<td>Title: </td>
-								<td><input type="text" ng-model="x.Title" ng-model-options="{ updateOn: 'blur' }" required></td>
-							</tr>
-							<tr>
-								<td>Email: </td>
-								<td><input type="email" ng-model="x.Email" ng-model-options="{ updateOn: 'blur' }"></td>
-							</tr>
-							<tr>
-							<td colspan="2" style="text-align:center"></br><button type="submit">Αποθήκευση</button></td>
-							</tr>
-						</table>
-					</form>
-				</div>
-			</div>
-		</li>
-	</ul>
-	
 </div>
 
 <script>
 
+var myApp = angular.module('studentsApp',["ngRoute"]);
 
-var myApp = angular.module('studentsApp',[]);
+//Router change the views 
+myApp.config(function($routeProvider){
+	$routeProvider
+		.when('/studentView/:id', {
+			templateUrl: 'studentView.html'
+		})
+		.when('/registerForm', {
+			templateUrl: 'registerForm.html'
+		})
+		.when('/studentList', {
+			templateUrl: 'studentList.html'
+		})
+		.otherwise({
+			templateUrl: 'studentList.html'
+		});
+});
 
-// Controller
-myApp.controller('studentsController', function($scope) {
+// Controllers
+myApp.controller('studentDetails', function($scope, $http, $routeParams){
+	console.log('studentDetails hit');
+	$http.get("connection.php"+"/"+$routeParams.id).then(function (response){
+		$scope.result = response.data;
+		$scope.studentview = angular.copy($scope.result);
+		});
+});
 
-	$scope.names = studentsNames;
+myApp.controller('studentsController', function($scope, $http, $filter) {
+	console.log('Hit studentsController');
+	//Get the students data from DB
+	$http.get("connection.php").then(function (response){
+		$scope.names = response.data;
+	});
 	
-	// Some boolean variables for show or hide content 
-	$scope.filters = '';
-	$scope.details = false;
-	$scope.bool = false;
-	$scope.shSpan = true;
-	$scope.shForm = false;
-	
-	// On click show only the clicked person and hide the others
-	$scope.showDetails = function(x){
-		$scope.filters = x.Name;
-		$scope.details = true;
-		$scope.shSpan = false;
-		$scope.edit = false;
-	}
-	// Show/Hide registration form
-	$scope.showForm = function(){
-		$scope.shForm = !$scope.shForm;
-	}
-	
-	$scope.showList = function(){
-		$scope.filters = '';
-		$scope.details = false;
-		$scope.shSpan = true;
-		$scope.edit = false;
-	}
 	// Registration(Push form inputs to the array with the names)
 	$scope.register = function(student){
 		if(!student.Email){
 			student.Email = "Δεν καταχωρήθηκε";
 		}
-		$scope.names.push(student);
-		console.log(student.Name + " added in System");
-		$scope.showForm();
-		$scope.addstudent = null;
+		$http.post("connection.php", student)
+			.then(function(status){
+					if(angular.isNumber(+status.data)){ //Check the data if it is a number (+ returns the number representation of the object see (https://en.wikibooks.org/wiki/JavaScript/Operators))
+						student.id = status.data;
+						$scope.tempStudent = angular.copy(student);
+						$scope.names.push($scope.tempStudent);
+						console.log('The new Student with Username:'+$scope.tempStudent.Name+' has added in the System');
+						alert('The new Student inserted press Ok to continue');
+						student.Name = '';
+						student.Title = '';
+						student.Email = '';
+					}
+				})
+			.catch(function(status){
+				console.log("The student has not added in the System"+"\n"+"Reason: "+status);
+			});		
 	}
-	// Change the filter when we make changes on the Name field
-	$scope.update = function(name){
-		$scope.filters = name;
+	// Update student model in database
+	$scope.update = function(student){
+		$http.put("connection.php/"+student.id, student)
+			.then(function successCallback(){
+				$scope.UpdateVar = $filter('filter')($scope.names, { id: student.id });//Find the model by filter
+				$scope.UpdateVar[0].Name = student.Name;
+				$scope.UpdateVar[0].Title = student.Title;
+				$scope.UpdateVar[0].Email = student.Email;
+				console.log("The student have been updated successfully");
+				alert("The student have been updated successfully");
+				$scope.edit = false;
+				})
+			.catch(function errorCallback(status){
+					console.log("The student has not updated in System because:"+"\n"+"Reason:"+status);
+				});
 	}
-	//Remove student from the array
+	//Remove student model from the database
 	$scope.removeStudent = function(student){
-	  var index = $scope.names.indexOf(student) //Find the cell number of this item
-      $scope.names.splice(index,1); // Remove from the cell "index" 1 item
-	  console.log(student.Name+" is removed from your System");
-	  $scope.showList();
+		$http.delete("connection.php/"+student.id)
+			.then(function successCallback(){
+				 var index = $scope.names.indexOf(student) //Find the cell number of this item
+				 $scope.names.splice(index,1); // Remove from the cell "index" 1 item
+				 console.log('The student with ID:'+student.id+' has removed from your System');
+				 alert('The student with ID:'+student.id+' has removed from your System');
+			 })
+			.catch(function errorCallback(status){
+				console.log("The student hasn't deleted yet from DB!"+"\n"+"Reason:"+status);
+			})
     }
 	
 });
 </script>
-
 </body>
 </html>

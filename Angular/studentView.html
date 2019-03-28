@@ -1,0 +1,32 @@
+
+<button class="form-button"> <a href="#!studentList"> Πίσω </a> </button>
+
+<div ng-controller="studentDetails"></br>
+	<h1>{{ studentview.Name }}</h1>
+	<h4>Τίτλος πτυχιακής: {{ studentview.Title }}</br>
+		Email: {{ studentview.Email }}</h4>
+	<button class="edit-button"  ng-init="edit = false" ng-click="edit =!edit">Επεξεργασία</button>
+	<button class="delete-button" ng-hide="edit" ng-click="removeStudent(studentview)"><a href="#!">Διαγραφή</a></button>
+	
+	<div class = "edit-details" ng-show="edit" ng-init="edit = false; saveButton = true">
+		<form ng-submit="update(studentview)">
+			<table></br>
+				<tr>
+					<td>Name: </td>
+					<td><input type="text" ng-model="studentview.Name" ng-model-options="{ updateOn: 'blur' }" ng-change="saveButton = false" required></td>
+				</tr>
+				<tr>
+					<td>Title: </td>
+					<td><input type="text" ng-model="studentview.Title" ng-model-options="{ updateOn: 'blur' }" ng-change="saveButton = false" required></td>
+				</tr>
+				<tr>
+					<td>Email: </td>
+					<td><input type="email" ng-model="studentview.Email" ng-model-options="{ updateOn: 'blur' }" ng-change="saveButton = false"></td>
+				</tr>
+				<tr>
+				<td colspan="2" style="text-align:center"></br><button type="submit" ng-click="edit = !edit" ng-disabled="saveButton">Αποθήκευση</button></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
