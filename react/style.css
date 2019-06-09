@@ -1,0 +1,24 @@
+.list-header{
+	padding:2px;
+	cursor:pointer;
+	
+}
+
+.list-header:hover{
+	background:green;
+	color:white;
+	display:inline;
+}
+
+li{
+	list-style:none;
+	padding: 10px;
+	}
+.editForm{
+	text-align: center;
+}
+.button {
+  text-align: center;
+  display: inline-block;
+  margin: 0px 10px;
+}
