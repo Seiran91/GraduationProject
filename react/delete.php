@@ -9,7 +9,7 @@ $db = "mydata";
 $conn = new mysqli($servername, $username, $password, $db) or die("Connection failed");
 
 if(isset($_POST)){
-		$id = $_POST['id'];
+		$id = $_POST["id"];
 		$sql = "DELETE FROM mytable WHERE id = '$id'";
 		if ($conn->query($sql)=== TRUE){
 			echo json_encode($id);
@@ -19,5 +19,4 @@ if(isset($_POST)){
 } else {
 	echo "The delete POST is: " . isset($_POST);
 }
-
 ?>
