@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Student, LoggedUser } from './Student';
+import { Student, LoggedUser } from '../Components/Student';
 import { Observable, throwError} from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Location } from '@angular/common';
@@ -22,9 +22,9 @@ export class ConnectionService {
   initDataVar: any;
 
   private baseURL = 'http://localhost/connection.php';
-  private userURL = 'http://localhost/users.php';
+  //private userURL = 'http://localhost/users.php';
   //private baseURL = 'https://seiran.online/connection.php';
-  //private userURL = 'https://seiran.online/users.php';
+  private userURL = 'https://seiran.online/users.php';
   students: Student[];
   
   httpOptions = {
@@ -57,7 +57,6 @@ export class ConnectionService {
   getStudentsList(): Observable <Student[]> {
 
     return this.http.get<Student[]>(this.baseURL)
-    
     .pipe(
       catchError((err) =>{
         return throwError(err);

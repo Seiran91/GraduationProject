@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ConnectionService } from '../connection.service';
+import { ConnectionService } from '../../Services/connection.service';
 import { Location } from '@angular/common';
 import {  User } from '../Student';
 import 'bootstrap/dist/css/bootstrap.min.css';

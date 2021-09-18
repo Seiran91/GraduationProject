@@ -1,4 +1,4 @@
-// Interface provides type-checking of Student ONLY not creating of this!
+// Interface provides type-checking of object not creating of this!
 
 export interface Student {
     id: number;

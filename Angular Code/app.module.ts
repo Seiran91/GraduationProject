@@ -2,16 +2,16 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule } from './Router/app-routing.module';
 
-import { ConnectionService } from './connection.service';
+import { ConnectionService } from './Services/connection.service';
 
 import { AppComponent } from './app.component';
-import { StudentsComponent } from './students/students.component';
-import { StudentDetailsComponent } from './student-details/student-details.component';
-import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
-import { RegisterComponent } from './register/register.component';
-import { LoginFormComponent } from './login-form/login-form.component';
+import { StudentsComponent } from './Components/students/students.component';
+import { StudentDetailsComponent } from './Components/student-details/student-details.component';
+import { PagenotfoundComponent } from './Components/pagenotfound/pagenotfound.component';
+import { RegisterComponent } from './Components/register/register.component';
+import { LoginFormComponent } from './Components/login-form/login-form.component';
 import { FilterPipe } from './Pipes/filter/filter.pipe';
 import { OrderPipe } from './Pipes/order/order.pipe';
 

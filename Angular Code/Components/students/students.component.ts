@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Student } from '../Student';
-import { ConnectionService } from '../connection.service';
+import { ConnectionService } from '../../Services/connection.service';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 @Component({
   selector: 'app-students',
@@ -11,9 +12,8 @@ import { ConnectionService } from '../connection.service';
 export class StudentsComponent implements OnInit {
   searchText: string = "";
   students: Student[];
-
-  constructor(public connectionService: ConnectionService) {
-   }
+  
+  constructor(public connectionService: ConnectionService) {}
 
    // Initialize students list by calling getList method below
   ngOnInit(): void {

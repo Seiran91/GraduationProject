@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {  Student } from '../Student';
-import { ConnectionService } from '../connection.service';
+import { ConnectionService } from '../../Services/connection.service';
 import { Location } from '@angular/common';
 import { FormGroup, FormBuilder, FormControl, Validators } from "@angular/forms";
 
@@ -55,6 +55,8 @@ export class RegisterComponent implements OnInit {
         const std = {Name: this.registerForm.get('Name').value, id: +data};
         // We push our registered student in Students List array to update the list and view
         this.connectionService.students.push(std);
+        // Sort array after new register
+        this.connectionService.students.sort((a,b) => a.Name.localeCompare(b.Name));
         alert("Student added succesfully with \n id: "+ data + "\n Name: " + std.Name);
         this.resetForm();
         },

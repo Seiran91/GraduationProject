@@ -56,10 +56,8 @@
             <label for="title"><b>Title</b></label><br>
             <textarea type="text" class="form-control" rows="3" id="update-title" formControlName="Title" ></textarea>
         </div>
-        <div class="displaybuttons">
-          <button type="submit" [disabled]="editForm.invalid || !valuesHasChanged" class="btn btn-success">Update</button>
-          <button type="button" class="btn btn-secondary" (click)="editShowHideBoolean()" >Cancel</button>
-        </div>
+        <button type="submit" [disabled]="editForm.invalid || !valuesHasChanged" class="btn btn-success">Update</button>
+        <button type="button" class="btn btn-secondary" (click)="editShowHideBoolean()" >Cancel</button>
     </form>
     </div>
 </div>
