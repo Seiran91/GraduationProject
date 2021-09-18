@@ -1,0 +1,65 @@
+<div class="studentDetails">
+  <nav>
+    <ul>
+      <li><button class="btn btn-primary" routerLink="/students">Students</button></li>
+      <li><button class="btn btn-secondary" (click)="goBack()">Back</button></li>
+    </ul>
+  </nav>
+  <table *ngIf="detailedStudent && !edit">
+    <tr>
+      <td><strong>Id:</strong></td>
+      <td> {{detailedStudent.id}}</td>
+    </tr>
+    <tr>
+      <td><strong>Name:</strong></td>
+      <td> {{detailedStudent.Name}}</td>
+    </tr>
+    <tr>
+      <td><strong>Email:</strong></td>
+      <td> {{detailedStudent.Email}}</td>
+    </tr>
+    <tr>
+      <td><strong>Title:</strong></td>
+      <td> {{detailedStudent.Title}}</td>
+    </tr>
+  </table>
+  <div class="displaybuttons" *ngIf="this.userLogged && !edit">
+    <button class="btn btn-primary" (click)="editShowHideBoolean()" >Edit</button>
+    <button *ngIf="IsItAdmin()" class="btn btn-danger" (click)="deleteStudent()" >Delete</button>
+  </div>
+</div>
+
+<div class="studentDetailsError" *ngIf="!detailedStudent && req_error_msg">
+  <h2>{{req_error_msg}}</h2>
+  <a routerLink="/students">Back to Home page</a>
+</div>
+
+<div class="studentDetailsEdit" *ngIf="detailedStudent && edit">
+  <div>
+    <h1>Edit Form</h1>
+    <form [formGroup]="editForm" (ngSubmit)="updateStudent()">
+      <div *ngIf="Name.errors?.required || Email.errors?.required || Title.errors?.required" style="color: red;">
+        All the fields are required!
+      </div>
+        <div class="form-group">
+            <label for="name"><b>Name</b></label><br>
+            <input type="text" class="form-control" id="update-name" formControlName="Name">
+        </div>
+        <div class="form-group">
+          <div *ngIf="Email.errors?.pattern" style="color: red;">
+            Email is not valid!
+          </div>
+            <label for="email"><b>Email</b></label><br>
+            <input type="email" class="form-control" id="update-email" formControlName="Email">
+        </div>
+        <div class="form-group">
+            <label for="title"><b>Title</b></label><br>
+            <textarea type="text" class="form-control" rows="3" id="update-title" formControlName="Title" ></textarea>
+        </div>
+        <div class="displaybuttons">
+          <button type="submit" [disabled]="editForm.invalid || !valuesHasChanged" class="btn btn-success">Update</button>
+          <button type="button" class="btn btn-secondary" (click)="editShowHideBoolean()" >Cancel</button>
+        </div>
+    </form>
+    </div>
+</div>

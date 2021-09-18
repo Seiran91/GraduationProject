@@ -1,0 +1,62 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+
+.half-width{
+    width: 50%;
+    margin-left: 25%;
+}
+nav{
+    display: flex;
+    justify-content:space-between;
+}
+
+span {
+    display: inline-block;
+}
+
+tr td{
+    border-bottom: 1px solid #ddd;
+}
+
+.rgt{
+    text-align: right;
+}
+
+.login-btn:hover{
+    background-color:green;
+}
+
+.logged-btn:hover{
+    background-color:grey;
+}
+
+/* Register form */
+.register-form{
+    margin: 0 auto;
+    width: 40%;
+}
+
+/* Back buttons */
+.back-btn{
+    margin: 5px 5px;
+    text-align: left;
+}
+
+/* Login form */
+.login-form{
+    margin: 0 auto;
+    width: 20%;
+}
+
+.act-btn{
+    display: flex;
+    justify-content:space-evenly;
+    align-items: center;
+    margin: 25px auto;
+}
+
+input, textarea {
+    text-align: center;
+    }
+.error{
+    color: red;
+}

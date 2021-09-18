@@ -1,0 +1,52 @@
+@import url('https://unpkg.com/bootstrap@4.5.0/dist/css/bootstrap.min.css');
+
+.studentDetailsError {
+ text-align: center;
+}
+input, textarea{
+    text-align: center;
+}
+form{
+    max-width: 50%;
+    margin: auto;
+}
+table{
+    
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    text-align: center;
+    border: 1px solid #000000;
+    word-wrap: normal;
+}
+td {
+    border: 1px solid #cecfd5;
+    padding: 10px 15px;
+}
+  
+.studentDetails{
+    max-width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+caption {
+    padding: 10px;
+    caption-side: top;
+}
+.studentDetailsEdit{
+    text-align: center;
+}
+nav ul{
+    list-style-type: none;
+    display: flex;
+    justify-content: space-evenly;
+}
+.displaybuttons{
+    display: flex;
+    justify-content:center;
+}
+button{
+    width: 90px;
+    height:max-content;
+    margin: 20px;
+}

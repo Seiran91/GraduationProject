@@ -1,0 +1,22 @@
+<div class="studentList">
+  <div class="dashboard">
+    <div class="input-group rounded">
+      <input type="search" [(ngModel)]="searchText" class="form-control rounded" placeholder="Search" aria-label="Search"
+        aria-describedby="search-addon">
+    </div>
+    <div *ngIf="this.connectionService.User.logged">
+      <button routerLink="/register" class="btn btn-primary" style="margin-left: 10px;">Register</button>
+    </div>
+  </div>
+  <ul class="list-group">
+    <li *ngFor="let student of students | orderBy: 'Name' | filter: searchText">
+      <a  routerLink="/student/{{student.id}}" class="list-group-item list-group-item-action" id="{{student.id}}">
+        <span>{{student.Name}}</span> 
+      </a>
+    </li>
+  </ul>
+</div>
+// students.component.html
+<li *ngFor="let student of students | orderBy: 'Name' | filter: searchText">
+    <span>{{student.Name}}</span>
+</li>
