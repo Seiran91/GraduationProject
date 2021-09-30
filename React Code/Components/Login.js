@@ -66,13 +66,13 @@ class Login extends React.Component {
         const data = {user,password};
         const authuser = {user: data.user, state: true};
         getUser(data)
-            .then(res => {
+            .then(response => {
+                if(response){
                 authentication(authuser);
                 this.setState({User: user, Logged: true});
-                //console.log(res)
+                } else {alert("Authentication failed!")}
             })
             .catch(console.error);
-        
     }
     back(){
         this.props.history.goBack();

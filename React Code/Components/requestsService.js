@@ -1,12 +1,11 @@
 import axios from 'axios';
 import { baseUrl, userUrl } from './backendUrl';
-var _ = require('underscore');
+import _ from 'underscore';
 
 /* All requests for the users data */
 export async function getUser(user){
   return await axios.post(userUrl, user)
         .then(response => {
-          //console.log(response.data);
             return response.data;
         })
         .catch(error => {
@@ -22,7 +21,6 @@ export async function getData(){
         .then(
             res => {
             var sortedStudents = _.sortBy(res.data, "Name");
-            //console.log(sortedStudents);
             return sortedStudents;
         })
         .catch( error => {
@@ -57,7 +55,6 @@ export async function sendData(reg){
 // PUT Request
 
 export async function updateDetails(url, student){
-    // Here will be the UPDATE function axios to update the student in db
     return await axios.put(baseUrl+url, student)
     .then(res => {
       return res.data;
@@ -66,7 +63,6 @@ export async function updateDetails(url, student){
       console.log(error.error);
       return error.error;
     });
-    
   }
 
 // DELETE Request

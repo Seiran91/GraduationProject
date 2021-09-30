@@ -23,17 +23,12 @@ class RegLink extends React.Component {
     }
 
 registerPerson(e){
-
     e.preventDefault();
-
     const name = document.getElementById('RegName').value;
     const email = document.getElementById('RegEmail').value;
     const title = document.getElementById('RegTitle').value;
     if((name.length && email.length && title.length) > 0){
-      //console.log(name.length,email.length,title.length);
       const student = {Name: name, Email: email, Title: title};
-    
-      
       sendData(student)
           .then(response => {
               if(Number.isInteger(response)){
@@ -47,7 +42,6 @@ registerPerson(e){
               } else {alert(response)}
           })
           .catch(console.error());
-          
       } else {
         alert("You have to fill all the fields!");
       }

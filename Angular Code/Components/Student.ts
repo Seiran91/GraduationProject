@@ -1,11 +1,17 @@
-// Interface provides type-checking of object not creating of this!
-
+// Interface provides type-checking 
+// of Student ONLY not creating of this!
+// file: Student.ts
 export interface Student {
     id: number;
     Name: string;
-    Email?: string;
-    Title?: string;
   }
+
+export interface StudentDetails {
+    id: number;
+    Name: string;
+    Email: string;
+    Title: string;
+}
 
 export interface User {
   user: string;

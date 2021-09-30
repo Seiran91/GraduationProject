@@ -9,16 +9,16 @@ function NavLinks(){
     if(user.logged){
         return(
             <nav>
-                    <Link to={'/Login'}>
-                        <button className="btn logged-btn">
-                            Welcome {user.user}<i className="fa fa-user"></i>
-                        </button>
-                    </Link>
-                    <Link to={'/RegLink'}>
-                        <button className="btn logged-btn">
-                            <i className="fa fa-plus-square">Add Person</i>
-                        </button>
-                    </Link>
+                <Link to={'/Login'}>
+                    <button className="btn logged-btn">
+                        Welcome {user.user}<i className="fa fa-user"></i>
+                    </button>
+                </Link>
+                <Link to={'/RegLink'}>
+                    <button className="btn logged-btn">
+                        <i className="fa fa-plus-square">Add Person</i>
+                    </button>
+                </Link>
             </nav>
         );
     } else {

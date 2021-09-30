@@ -1,8 +1,6 @@
 var _ = require('underscore');
-//export const baseUrl = 'http://localhost/connection.php';
-//export const userUrl = 'http://localhost/users.php';
-export const baseUrl = 'https://seiran.online/connection.php';
-export const userUrl = 'https://seiran.online/users.php';
+export const baseUrl = 'http://localhost/connection.php';
+export const userUrl = 'http://localhost/users.php';
 export var globalData = '';
 export var User = {user: "Login", logged: false};
 

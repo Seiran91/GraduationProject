@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ConnectionService } from '../../Services/connection.service';
 import { Location } from '@angular/common';
-import {  User } from '../Student';
+import {  User, LoggedUser } from '../Student';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 @Component({
@@ -10,20 +10,25 @@ import 'bootstrap/dist/css/bootstrap.min.css';
   styleUrls: ['./login-form.component.css']
 })
 export class LoginFormComponent implements OnInit {
-
+  userLogged: LoggedUser;
   Loguser: User = {user: null, password: null};
 
-  constructor(public userService: ConnectionService, private location: Location) { }
+  constructor(private userService: ConnectionService, private location: Location) { }
 
   ngOnInit(): void {
+    this.userLogged = { user: this.userService.User.user, logged: this.userService.User.logged }
   }
 
   login() {
     this.userService.Login(this.Loguser)
-    .subscribe( ()=>{
-      //console.log("login-form success");
-      this.Loguser.user=null;
-      this.Loguser.password=null;
+    .subscribe( res =>{
+      if(res){
+        this.userLogged.logged = true;
+        this.Loguser.user=null;
+        this.Loguser.password=null;
+      } else {
+        alert("Authentication failed!");
+      }
     },
     err =>{
       console.log(err)
@@ -33,6 +38,7 @@ export class LoginFormComponent implements OnInit {
   logout() {
     this.userService.Logout();
     console.log("Logged out!");
+    this.userLogged.logged = false;
   }
 
   back() {

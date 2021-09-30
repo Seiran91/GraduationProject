@@ -16,8 +16,7 @@ class StudentList extends React.Component{
     
     this.handleSearch = this.handleSearch.bind(this);
   }
-    componentDidMount(){
-      /*
+  /*
       componentDidMount() is initializer of the view and called every time when this view is rendering,
       thats why i store data in global variable "globalData" where we fetch data from the database
       and store them in it and with the If condition in essence we prevent
@@ -25,6 +24,7 @@ class StudentList extends React.Component{
 
       This practice is not suggested because we use global variables!
       */
+    componentDidMount(){
      if(globalData === ''){
       const data = getData();
       data.then(res => {
@@ -38,7 +38,6 @@ class StudentList extends React.Component{
     }
 
     handleSearch (event) {
-      //console.log("Searched: "+ event.target.value.length);
       if(event.target.value.length !== 0){
         let searchVal = event.target.value.toLowerCase();
         this.setState({

@@ -2,23 +2,34 @@
   <button class="btn btn-secondary" (click)="back()">Back</button>
 </div>
   <br>
-  <div class="log-dash" *ngIf="!this.userService.User.logged">
-    <form>
+  <div></div>
+  <div class="log-dash" *ngIf="!this.userLogged.logged">
+    <form #submitForm="ngForm">
       <br>
       <img src="assets/angularicon.png" alt="logo">
       <br>
       <div class="form-floating mb-3">
-        <input type="text" class="form-control" [(ngModel)]="Loguser.user" id="email" placeholder="User" name="user">
+        <input type="text" class="form-control"
+        [(ngModel)]="Loguser.user"
+        id="email"
+        placeholder="User"
+        name="username"
+        required >
         <label for="email">User</label>
       </div>
       <div class="form-floating">
-        <input type="password" class="form-control" [(ngModel)]="Loguser.password" id="password" placeholder="Password" name="password">
+        <input type="password" class="form-control"
+        [(ngModel)]="Loguser.password"
+        id="password"
+        placeholder="Password"
+        name="password"
+        required >
         <label for="password">Password</label>
       </div><br>
-      <button type="submit" class="btn btn-primary" (click)="login()">Log in</button>
+      <button [disabled]="submitForm.invalid" type="submit" class="btn btn-primary" (click)="login()">Log in</button>
     </form>
   </div>
-<div style="text-align: center;" *ngIf="this.userService.User.logged">
-  <h1>Welcome {{this.userService.User.user}}</h1>
+<div style="text-align: center;" *ngIf="this.userLogged.logged">
+  <h1>Welcome {{this.userLogged.user}}</h1>
   <button class="btn btn-secondary" (click)="logout()">Log out</button>
 </div>

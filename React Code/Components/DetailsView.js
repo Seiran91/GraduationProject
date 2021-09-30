@@ -35,7 +35,6 @@ class DetailsView extends React.Component {
       .catch(error => {
       console.log(error);
     });
-    
   }
   
   render(){
@@ -204,7 +203,7 @@ class DetailsView extends React.Component {
 
     /* Here is the request to UPDATE function to update the student in db */
     updateDetails(url, student)
-    .then(res => {
+    .then(() => {
       console.log(`Before:\nName: ${this.state.details.Name}\nEmail: ${this.state.details.Email}\nTitle: ${this.state.details.Title}`);
       this.setState({details: {Name: name, Email: email, Title: title} });
       console.log(`After:\nName: ${name}\nEmail: ${email}\nTitle: ${title}`);
@@ -227,8 +226,7 @@ class DetailsView extends React.Component {
     const url = this.props.match.url;
     const id = this.props.match.params.id;
     deleteData(url)
-      .then(res => {
-        //console.log(res);
+      .then(() => {
         const index = globalData.findIndex(function(data, i){
           return data.id === id
         });

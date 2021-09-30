@@ -26,7 +26,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 			echo TRUE;
 		}
 		else if($result->num_rows == 0){
-			echo "No entries";
+			echo FALSE;
 			}
 		else {
 			echo $conn->error;

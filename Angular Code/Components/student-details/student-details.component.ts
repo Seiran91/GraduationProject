@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { FormGroup, FormBuilder, FormControl, Validators } from "@angular/forms";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { ConnectionService } from '../../Services/connection.service';
 
 @Component({
@@ -15,9 +15,9 @@ export class StudentDetailsComponent implements OnInit {
   detailedStudent: any;
   edit: boolean = false;
   valuesHasChanged = false;
-  req_error_msg: string = "Content which are you looking for doesn't exist";
-  editForm: FormGroup;
+  req_error_msg: string = "";
   userLogged = false;
+  editForm: FormGroup;
   
   constructor(private route: ActivatedRoute,
     private studentService: ConnectionService,
@@ -36,7 +36,7 @@ export class StudentDetailsComponent implements OnInit {
     this.studentService.getStudentDetails(reqStudent)
       .subscribe(
         response => {this.detailedStudent = response, this.createForm()},
-        err => {console.log(err.message);}
+        err => {this.req_error_msg = err.status +" "+ err.name}
         );
   }
 
@@ -49,8 +49,7 @@ export class StudentDetailsComponent implements OnInit {
     { updateOn: "blur" }
     );
     // Below we check changes on form input
-    this.editForm.valueChanges.subscribe(x => {
-      //console.log('Form value changed');
+    this.editForm.valueChanges.subscribe(() => {
       if((this.editForm.get('Name').value !== this.detailedStudent.Name) ||
         (this.editForm.get('Email').value !== this.detailedStudent.Email) ||
         (this.editForm.get('Title').value !== this.detailedStudent.Title)) {
@@ -80,8 +79,10 @@ export class StudentDetailsComponent implements OnInit {
     var index = this.studentService.students.findIndex(function(item, i){
       return item.id == +id;
     });
-    // Here the only field that is visible and we need to update is the Name field, the others are fetched from db
-    // when we ask for detail's
+    /* Here the only field that is visible and
+    we need to update is the Name field, the others
+    are fetched from db when we ask for detail's
+    */
     this.studentService.updateStudent(studentURL, this.editForm.value)
     .subscribe(
       response => {
@@ -99,9 +100,10 @@ export class StudentDetailsComponent implements OnInit {
   }
   deleteStudent(): void {
     const reqStudent = this.location.path();
+    /* Operand + used to convert id from string to number */
     const id = +this.route.snapshot.paramMap.get("id");
     const index = this.studentService.students.findIndex(function(item, i){
-      return item.id == +id;
+      return item.id == id;
     });
     
     this.studentService.deleteStudent(reqStudent)

@@ -7,17 +7,18 @@ import StudentList from './Components/StudentsList';
 import DetailsView from './Components/DetailsView';
 import RegLink from './Components/RegisterView';
 import Login from './Components/Login';
+import { NoMatch } from './Components/404error';
 import { getData } from './Components/requestsService';
 import { updateGlobalData } from './Components/backendUrl';
-import { NoMatch } from './Components/404error';
 
 function App() {
-  getData().then(res => updateGlobalData(res)).catch(console.error())
+  getData()
+  .then(res => updateGlobalData(res))
+  .catch(console.error());
   /* 
   Using global variables it's bad programming practice but in this case we use them on purpose to
   show the possibilities of these frameworks!
   */
-
   return (
     <div className="App">
       <header className="App-header">
@@ -37,7 +38,6 @@ function App() {
           <Route path = "*" component={NoMatch} />
         </Switch>
       </Router>
-
      </div>
   );
 }

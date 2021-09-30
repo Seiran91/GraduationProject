@@ -1,8 +1,7 @@
 
-<div>
+<div *ngIf="this.User.logged">
   <h1>Register Form</h1>
   <p>*Fill all the fields*</p>
-
     <form [formGroup]="registerForm" (ngSubmit)="newStudent()">
 
       <div style="background-color: royalblue;"
@@ -37,44 +36,7 @@
       <button type="button" class="btn btn-secondary" (click)="back()">Back</button>
     </form>
   </div>
-<!--
-<div>
-<h1>Register Form</h1>
-<p>*Fill all the fields*</p>
-  <form>
-    <div class="form-group">
-      <div *ngIf="name.invalid && (name.dirty || name.touched)" class="alert">
-        <div *ngIf="name.errors?.required" style="color: red;">
-          Name is required!
-        </div>
-      </div>
-      <label for="name">Full Name</label>
-      <input type="text" class="form-control" id="reg-name" required [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="model.Name" name="name" #name="ngModel" placeholder="Enter Name">
-    </div>
-    <div class="form-group">
-      <div *ngIf="email.invalid && (email.dirty || email.touched)" class="alert">
-        <div *ngIf="email.errors?.required" style="color: red;">
-          Email is required!
-        </div>
-        <div *ngIf="email.errors?.pattern" style="color: red;">
-          Email is not valid!
-        </div>
-      </div>
-        <label for="email">Email</label>
-        <input type="email" class="form-control" id="reg-email" required [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="model.Email" name="email" #email="ngModel" pattern="^([a-z]+([0-9.\-_]*[a-z0-9]+)*@{1}[a-z]+\.{1}[a-z]+)+$" placeholder="Enter email">
-    </div>
-    <div class="form-group">
-      <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert">
-        <div *ngIf="title.errors?.required" style="color: red;">
-          <p>Title is required!</p>
-        </div>
-      </div>
-        <label for="title">Title</label>
-        <textarea type="text" rows="3" class="form-control" id="reg-title" required [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="model.Title" name="title" #title="ngModel" placeholder="Enter Project's Title"></textarea>
-    </div><br>
-    <button type="button" (click)="newStudent()" class="btn btn-primary"
-    [disabled]="(name.value === '') || (email.value === '' || email.errors?.pattern) || (title.value === '')">Add Student</button>
-    <button class="btn btn-secondary" (click)="back()">Back</button>
-  </form>
-</div>
--->
+  <div *ngIf="!this.User.logged" style="text-align: center;">
+    <h1>You have to login if you want to see this Component!</h1>
+    <button routerLink="/" class="btn btn-primary">Home Page</button>
+  </div>

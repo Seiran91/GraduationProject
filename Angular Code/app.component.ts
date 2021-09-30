@@ -6,6 +6,8 @@ import { ConnectionService } from './Services/connection.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent{
-  constructor(public userService: ConnectionService) { }
+  constructor(public userService: ConnectionService) {
+   }
   title = 'RESTful Angular';
+
 }

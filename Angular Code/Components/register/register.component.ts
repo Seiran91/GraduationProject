@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {  Student } from '../Student';
 import { ConnectionService } from '../../Services/connection.service';
 import { Location } from '@angular/common';
-import { FormGroup, FormBuilder, FormControl, Validators } from "@angular/forms";
+import { FormBuilder, Validators } from "@angular/forms";
 
 @Component({
   selector: 'app-register',
@@ -10,29 +9,28 @@ import { FormGroup, FormBuilder, FormControl, Validators } from "@angular/forms"
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
+  
+  
+  pattern="^([a-z]+([0-9.\-_]*[a-z0-9]+)*@{1}[a-z]+\.{1}[a-z]+)+$";
+  registerForm = this.fb.group({
+    Name: ['', [Validators.required]],
+    Email: ['', [Validators.required, Validators.pattern(this.pattern)]],
+    Title: ['', [Validators.required]]
+  },
+  { updateOn: "blur" }
+  );
 
   constructor(
     private connectionService: ConnectionService,
     private fb: FormBuilder,
     private location: Location) { }
   
-  registerForm: FormGroup;
+  User: any;
   
   ngOnInit(): void {
-    this.createForm();
+    this.User = {user: this.connectionService.User.user, logged: this.connectionService.User.logged};
   }
-  
-  pattern="^([a-z]+([0-9.\-_]*[a-z0-9]+)*@{1}[a-z]+\.{1}[a-z]+)+$";
 
-  createForm(){
-    this.registerForm = this.fb.group({
-      Name: ['', [Validators.required]],
-      Email: ['', [Validators.required, Validators.pattern(this.pattern)]],
-      Title: ['', [Validators.required]]
-    },
-    { updateOn: "blur" }
-    );
-  }
   /* ---Description for get method bellow---
         
   Retrieves a child control given the control's name or path
@@ -51,12 +49,13 @@ export class RegisterComponent implements OnInit {
     this.connectionService.addStudent(this.registerForm.value)
     .subscribe(
       data =>{
-        //The unary + operator its operand convert it to Number type otherwise we get type incompatibility error
+        /*The unary + operator its operand
+        convert it to Number type otherwise
+        we get type incompatibility error */
         const std = {Name: this.registerForm.get('Name').value, id: +data};
-        // We push our registered student in Students List array to update the list and view
+        //We push our registered student
+        //in Students List array to update the list and view
         this.connectionService.students.push(std);
-        // Sort array after new register
-        this.connectionService.students.sort((a,b) => a.Name.localeCompare(b.Name));
         alert("Student added succesfully with \n id: "+ data + "\n Name: " + std.Name);
         this.resetForm();
         },

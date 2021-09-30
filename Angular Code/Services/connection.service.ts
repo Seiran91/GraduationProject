@@ -1,56 +1,39 @@
 import { Injectable } from '@angular/core';
-import { Student, LoggedUser } from '../Components/Student';
-import { Observable, throwError} from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
+import { Student, StudentDetails, LoggedUser, User } from '../Components/Student';
+import { Observable, throwError} from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-
 
 @Injectable({
   providedIn: 'root'
 })
 
-
 export class ConnectionService {
 
-
-  constructor( private http: HttpClient, private location: Location ) {
-
-  }
-
-  User: LoggedUser = {user: "Login", logged: false};
-  initDataVar: any;
+  constructor(
+    private http: HttpClient,
+    private location: Location
+    ) {
+      
+    }
 
   private baseURL = 'http://localhost/connection.php';
-  //private userURL = 'http://localhost/users.php';
-  //private baseURL = 'https://seiran.online/connection.php';
-  private userURL = 'https://seiran.online/users.php';
-  students: Student[];
-  
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
+  private userURL = 'http://localhost/users.php';
 
-  // initDataFun called on app-start for initialize data for the application only
+  User: LoggedUser = {user: "Login", logged: false};
+  students: Student[];
+
+  // initDataFun called once application starts for initialize data
   initDataFun(): Promise<Boolean> {
-    
-    console.log("initDataFun() runs..");
-    
     return new Promise<Boolean>((resolve)=>{
-        //this.initDataVar = this.getStudentsList();
         this.getStudentsList()
         .subscribe(
-          data => { this.students = data, resolve(true) },
-          err => { console.log("Something went wrong!" + err), resolve(false) }
-          );
-        
-    });    
-
-  }
-
-  getData(): Observable <Student[]>{
-    console.log("getData() runs..");
-    return this.initDataVar;
+          data => { this.students = data },
+          err => { console.log("Something went wrong!\n" + err.message), resolve(false) },
+          () => {resolve(true)}
+        );
+    });
   }
 
   /* GET requests begin here */
@@ -63,8 +46,8 @@ export class ConnectionService {
       }));
   }
 
-  getStudentDetails(reqStudent: string): Observable <Student[]> {
-    return this.http.get<Student[]>(`${this.baseURL}${reqStudent}`)
+  getStudentDetails(reqStudent: string): Observable <StudentDetails[]> {
+    return this.http.get<StudentDetails[]>(`${this.baseURL}${reqStudent}`)
     .pipe(
       catchError((err) =>{
         return throwError(err);
@@ -76,8 +59,8 @@ export class ConnectionService {
 /*---------------------------------------------*/
 
   /* POST requests begin here */
-  addStudent(student: Student) {
-    return this.http.post<Student>(this.baseURL, student)
+  addStudent(student: StudentDetails) {
+    return this.http.post<StudentDetails>(this.baseURL, student)
     .pipe(
       catchError((err) =>{
         return throwError(err.message);
@@ -89,9 +72,8 @@ export class ConnectionService {
 /*---------------------------------------------*/
 
   /* PUT requests begin here */
-  updateStudent(studentURL: string, student: Student) {
-    //console.log(student);
-    return this.http.put<Student>(`${this.baseURL}${studentURL}`, student, this.httpOptions)
+  updateStudent(studentURL: string, student: StudentDetails) {
+    return this.http.put<StudentDetails>(`${this.baseURL}${studentURL}`, student)
     .pipe(
       catchError((err) =>{
         return throwError(err.message);
@@ -104,7 +86,7 @@ export class ConnectionService {
 
   /* DELETE requests begin here */
   deleteStudent(reqStudent: string) {
-    return this.http.delete<Student>(`${this.baseURL}${reqStudent}`, this.httpOptions)
+    return this.http.delete(`${this.baseURL}${reqStudent}`)
     .pipe(
       catchError((err) =>{
         return throwError(err.message);
@@ -114,14 +96,16 @@ export class ConnectionService {
 
   /* DELETE requests end here */
 
-  Login(user){
-      return this.http.post<any>(this.userURL, user)
+  Login(user: User){
+      return this.http.post<User>(this.userURL, user)
       .pipe(
         tap(res => {
           if(res){
             console.log("Login success!");
             this.User.user = user.user;
             this.User.logged = true;
+          } else {
+            return false;
           }
         }),
         catchError((err) =>{

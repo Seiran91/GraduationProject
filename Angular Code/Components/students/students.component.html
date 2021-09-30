@@ -4,7 +4,7 @@
       <input type="search" [(ngModel)]="searchText" class="form-control rounded" placeholder="Search" aria-label="Search"
         aria-describedby="search-addon">
     </div>
-    <div *ngIf="this.connectionService.User.logged">
+    <div *ngIf="this.userLogged">
       <button routerLink="/register" class="btn btn-primary" style="margin-left: 10px;">Register</button>
     </div>
   </div>
@@ -16,4 +16,3 @@
     </li>
   </ul>
 </div>
-<div>
